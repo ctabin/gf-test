@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ch.astorm.gf-embedded</groupId>
+  <artifactId>ear</artifactId>
+  <packaging>ear</packaging>
+  <name>GF Project (EAR)</name>
+  <parent>
+    <groupId>ch.astorm</groupId>
+    <artifactId>gf-embedded</artifactId>
+    <version>${revision}</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <build>
+    <plugins>
+      <!-- EAR generation -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-ear-plugin</artifactId>
+        <configuration>
+          <modules>
+            <webModule>
+              <groupId>ch.astorm.gf-embedded</groupId>
+              <artifactId>war</artifactId>
+              <contextRoot>/sample-war</contextRoot>
+              <bundleFileName>sample-war.war</bundleFileName>
+            </webModule>
+            <ejbModule>
+              <groupId>ch.astorm.gf-embedded</groupId>
+              <artifactId>ejb</artifactId>
+              <bundleFileName>sample-ejb.jar</bundleFileName>
+            </ejbModule>
+          </modules>
+          <defaultLibBundleDir>lib</defaultLibBundleDir>
+          <outputFileNameMapping>@{artifactId}@-@{version}@@{dashClassifier?}@.@{extension}@</outputFileNameMapping>
+          <finalName>sample-gf-app</finalName>
+          <displayName>sample-gf-app</displayName>
+          <skinnyWars>true</skinnyWars>
+          <generateApplicationXml>true</generateApplicationXml>
+          <useBaseVersion>true</useBaseVersion>
+          <version>${javaee.ear.version}</version>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>ch.astorm.gf-embedded</groupId>
+      <artifactId>ejb</artifactId>
+      <version>${project.version}</version>
+      <type>ejb</type>
+    </dependency>
+    <dependency>
+      <groupId>ch.astorm.gf-embedded</groupId>
+      <artifactId>war</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
+    </dependency>
+  </dependencies>
+</project>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ch.astorm.gf-embedded</groupId>
+  <artifactId>launcher</artifactId>
+  <packaging>jar</packaging>
+  <name>GF Project (Launcher)</name>
+  <parent>
+    <groupId>ch.astorm</groupId>
+    <artifactId>gf-embedded</artifactId>
+    <version>${revision}</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>ch.astorm.launcher.Main</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.json</groupId>
+      <artifactId>jakarta.json-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+        
+    <!-- special dependency to force the lookup of classes with the correct JDK
+         and avoiding classloading issues
+         https://github.com/payara/Payara/issues/5500 -->
+    <dependency>
+      <groupId>org.glassfish.pfl</groupId>
+      <artifactId>pfl-basic</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Must be at the end, especially because the payara-embedded-all also
+         includes an old version of H2 which is not compatible with GeoDB and
+         latest version of JTS. -->
+    <dependency>
+      <groupId>${appserver.groupId}</groupId>
+      <artifactId>${appserver.artifactId}</artifactId>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+</project>

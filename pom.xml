@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ch.astorm</groupId>
+  <artifactId>gf-embedded</artifactId>
+  <packaging>pom</packaging>
+  <version>${revision}</version>
+  <name>GF Project (Main)</name>
+  <description>Simple GF project</description>
+  <properties>
+
+    <revision>1.0.0-SNAPSHOT</revision>
+    
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
+    <!--
+      Java SE version.
+      This value will be overridden in the JDK active profile. Hence, this value
+      is only here to represent the default JDK that should be used for compilation.
+    -->
+    <javase.version>17</javase.version>
+    
+    <!--
+      Java EE version
+    -->
+    <javaee.version>10.0.0</javaee.version>
+    <javaee.ear.version>10</javaee.ear.version>
+    
+    <!--
+      Special internal access for GlassFish/Payara as defined in the production domain.
+    -->
+    <java.add-opens.mf>             java.base/jdk.internal.loader                         java.base/jdk.internal.ref                         java.base/java.lang                         java.base/java.lang.invoke                         java.base/java.io                         java.base/java.nio                         java.base/java.net                         java.base/java.util                         java.base/sun.nio.ch                         java.base/sun.security.util                         java.management/sun.management                         jdk.management/com.sun.management.internal                         java.base/sun.net.www                         java.base/sun.net.www.protocol.jrt                         java.base/sun.net.www.protocol.jar                         java.naming/javax.naming.spi                         java.naming/com.sun.jndi.ldap                         java.rmi/sun.rmi.transport                         java.logging/java.util.logging            </java.add-opens.mf>
+    <java.add-opens.cli>--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.security.util=ALL-UNNAMED --add-opens=java.management/sun.management=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --add-opens=java.base/sun.net.www=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED --add-opens=java.logging/java.util.logging=ALL-UNNAMED</java.add-opens.cli>
+    
+    <!--
+      Ensures timestamp has the correct format, otherwise it can cause some
+      problems in the IDE.
+    -->
+    <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
+    
+    <junit.version>4.13.2</junit.version>
+    <h2database.version>2.1.214</h2database.version>
+    <hibernate.version>6.1.7.Final</hibernate.version>
+
+    <!--
+      Special property to define which application server to use.
+    -->
+    <appserver.groupId>org.glassfish.main.extras</appserver.groupId>
+    <appserver.artifactId>glassfish-embedded-all</appserver.artifactId>
+    <appserver.version>7.0.5</appserver.version>
+    <!--
+    <appserver.groupId>fish.payara.extras</appserver.groupId>
+    <appserver.artifactId>payara-embedded-all</appserver.artifactId>
+    <appserver.version>6.2023.5</appserver.version>
+    -->
+  </properties>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.1.0</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.surefire</groupId>
+              <artifactId>surefire-junit47</artifactId>
+              <version>3.1.0</version>
+            </dependency>
+          </dependencies>
+          <configuration combine.children="append">
+            <runOrder>alphabetical</runOrder>
+            <disableXmlReport>true</disableXmlReport>
+            <useFile>false</useFile>
+            <reuseForks>false</reuseForks>
+            <forkCount>1</forkCount>
+            <argLine>${java.add-opens.cli}</argLine>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.3.0</version>
+          <configuration>
+            <!-- for reproductible builds: multiple compilations of the same
+                 content will result in the same JAR -->
+            <outputTimestamp>2020-01-01T00:00:00-00:00</outputTimestamp>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <!-- version 3.1.0 breaks the run-server.sh script because of dependency
+               issues during the bootstrap of the server
+               https://github.com/mojohaus/exec-maven-plugin/issues/322 -->
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.6.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-ejb-plugin</artifactId>
+          <version>3.2.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.3.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-ear-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.hibernate.orm.tooling</groupId>
+          <artifactId>hibernate-enhance-maven-plugin</artifactId>
+          <version>${hibernate.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+      <!-- Flatten poms for install/deploy (to have the correct revision) -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>1.5.0</version>
+        <configuration>
+          <!-- found in https://maven.apache.org/maven-ci-friendly.html -->
+          <!-- also present in https://www.mojohaus.org/flatten-maven-plugin/apidocs/org/codehaus/mojo/flatten/FlattenMode.html -->
+          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+          <updatePomFile>true</updatePomFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <modules>
+    <module>ejb</module>
+    <module>war</module>
+    <module>ear</module>
+    <module>launcher</module>
+  </modules>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>ch.astorm.gf-embedded</groupId>
+        <artifactId>ejb</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.astorm.gf-embedded</groupId>
+        <artifactId>war</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.astorm.gf-embedded</groupId>
+        <artifactId>ear</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.astorm.gf-embedded</groupId>
+        <artifactId>launcher</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Jakarta EE dependencies -->
+      <dependency>
+        <groupId>jakarta.platform</groupId>
+        <artifactId>jakarta.jakartaee-api</artifactId>
+        <version>${javaee.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.transaction</groupId>
+        <artifactId>jakarta.transaction-api</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>2.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+        <version>2.1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-activation</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.json</groupId>
+        <artifactId>jakarta.json-api</artifactId>
+        <version>2.1.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.12.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.14</version>
+      </dependency>
+
+      <!-- Hibernate -->
+      <dependency>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate.version}</version>
+        <optional>true</optional>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>${h2database.version}</version>
+      </dependency>
+
+      <!-- Needed for the tests because otherwise the project doesn't deploy
+           due to Multi-Relase jar issues
+           https://github.com/eclipse-ee4j/orb-gmbal-pfl/issues/43
+           https://github.com/payara/Payara/issues/5500 -->      
+      <dependency>
+        <groupId>org.glassfish.pfl</groupId>
+        <artifactId>pfl-basic</artifactId>
+        <version>4.1.2</version>
+      </dependency>
+      
+      <!-- Embedded application server -->
+      <!-- To put generally as the last dependency to avoid classpath conflicts
+           especially with H2 -->
+      <dependency>
+        <groupId>${appserver.groupId}</groupId>
+        <artifactId>${appserver.artifactId}</artifactId>
+        <version>${appserver.version}</version>
+      </dependency>
+      
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <!-- JUnit -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
