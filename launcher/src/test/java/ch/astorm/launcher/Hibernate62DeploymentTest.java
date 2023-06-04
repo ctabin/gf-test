@@ -29,6 +29,9 @@ public class Hibernate62DeploymentTest {
         File ear = new File("../ear/target/sample-gf-app.ear");
         if(!ear.exists()) { throw new IllegalStateException("File does not exists: "+ear.getAbsolutePath()); }
         
+        File warext = new File("../war-ext/target/war-ext-1.0.0-SNAPSHOT.war");
+        if(!warext.exists()) { throw new IllegalStateException("File does not exists: "+warext.getAbsolutePath()); }
+        
         String domainXML;
         try(InputStream is = Main.class.getResourceAsStream("domain.xml")) {
             domainXML = IOUtils.toString(is, StandardCharset.UTF_8);
@@ -67,9 +70,12 @@ public class Hibernate62DeploymentTest {
         
         //String installRoot = System.getProperty("com.sun.aas.installRoot");
 
-        Deployer earDeployer = glassfish.getDeployer();
-        String depName = earDeployer.deploy(ear);
-        assertNotNull("Deployment has failed", depName);
+        Deployer deployer = glassfish.getDeployer();
+        String earDepName = deployer.deploy(ear);
+        assertNotNull("EAR deployment has failed", earDepName);
+        
+        String warextDepName = deployer.deploy(warext);
+        assertNotNull("WAR-EXT deployment has failed", warextDepName);
         
         try(CloseableHttpClient client = HttpClientBuilder.create().build()) {
             try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war/"))) {
@@ -88,12 +94,23 @@ public class Hibernate62DeploymentTest {
                 String responseStr;
                 try(InputStream is = response.getEntity().getContent()) {
                     responseStr = IOUtils.toString(is, StandardCharset.UTF_8);
-                    System.out.println("### [QUERY] Response: "+responseStr);
+                    System.out.println("### [QUERY][WAR] Response: "+responseStr);
+                }
+            }
+            
+            try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/war-ext?query=4"))) {
+                assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
+
+                String responseStr;
+                try(InputStream is = response.getEntity().getContent()) {
+                    responseStr = IOUtils.toString(is, StandardCharset.UTF_8);
+                    System.out.println("### [QUERY][WAR-EXT] Response: "+responseStr);
                 }
             }
         }
         
-        earDeployer.undeploy(depName);
+        deployer.undeploy(warextDepName);
+        deployer.undeploy(earDepName);
         
         glassfish.stop();
         runtime.shutdown();

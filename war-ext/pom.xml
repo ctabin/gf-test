@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.astorm.gf-embedded</groupId>
-  <artifactId>war</artifactId>
+  <artifactId>war-ext</artifactId>
   <packaging>war</packaging>
-  <name>GF Project (WAR)</name>
+  <name>GF Project (WAR external)</name>
   <parent>
     <groupId>ch.astorm</groupId>
     <artifactId>gf-embedded</artifactId>
@@ -14,9 +14,15 @@
   <dependencies>
     <dependency>
       <groupId>ch.astorm.gf-embedded</groupId>
-      <artifactId>ejb</artifactId>
-      <optional>true</optional>
+      <artifactId>api</artifactId>
     </dependency>
+    
+    <!-- simple lib to trigger multiple calls to contextInitiliazed in listener -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    
     <!-- Jakarta EE dependencies -->
     <dependency>
       <groupId>jakarta.platform</groupId>
