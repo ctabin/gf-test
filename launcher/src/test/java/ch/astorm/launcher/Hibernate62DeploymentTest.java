@@ -40,7 +40,7 @@ public class Hibernate62DeploymentTest {
         File dbDir = new File(rootDir, "database");
         dbDir.mkdirs();
         
-        boolean isPayara = System.getProperty("appserver.groupId", "-").equals("fish.payara.extras");
+        boolean isPayara = System.getProperty("appserver.groupId", "fish.payara.extras").equals("fish.payara.extras");
         
         File db = new File(dbDir, "db.data");
         domainXML = domainXML.replace("${DATABASE_FILE}", db.getAbsolutePath());

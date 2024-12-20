@@ -45,14 +45,14 @@
     <!--
       Special property to define which application server to use.
     -->
+    <!--
     <appserver.groupId>org.glassfish.main.extras</appserver.groupId>
     <appserver.artifactId>glassfish-embedded-all</appserver.artifactId>
     <appserver.version>7.0.5</appserver.version>
-    <!--
+    -->
     <appserver.groupId>fish.payara.extras</appserver.groupId>
     <appserver.artifactId>payara-embedded-all</appserver.artifactId>
-    <appserver.version>6.2023.5</appserver.version>
-    -->
+    <appserver.version>7.2024.1.Alpha3</appserver.version>
   </properties>
   <build>
     <pluginManagement>
