@@ -40,18 +40,18 @@
     
     <junit.version>4.13.2</junit.version>
     <h2database.version>2.3.232</h2database.version>
-    <hibernate.version>6.6.4.Final</hibernate.version>
+    <hibernate.version>6.6.11.Final</hibernate.version>
 
     <!--
       Special property to define which application server to use.
     -->
     <appserver.groupId>org.glassfish.main.extras</appserver.groupId>
     <appserver.artifactId>glassfish-embedded-all</appserver.artifactId>
-    <appserver.version>7.0.5</appserver.version>
+    <appserver.version>7.0.23</appserver.version>
     <!--
     <appserver.groupId>fish.payara.extras</appserver.groupId>
     <appserver.artifactId>payara-embedded-all</appserver.artifactId>
-    <appserver.version>6.2023.5</appserver.version>
+    <appserver.version>6.2025.3</appserver.version>
     -->
   </properties>
   <build>
@@ -60,7 +60,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.5.2</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.surefire</groupId>
@@ -80,7 +80,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.4.2</version>
           <configuration>
             <!-- for reproductible builds: multiple compilations of the same
                  content will result in the same JAR -->
@@ -90,20 +90,17 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <!-- version 3.1.0 breaks the run-server.sh script because of dependency
-               issues during the bootstrap of the server
-               https://github.com/mojohaus/exec-maven-plugin/issues/322 -->
-          <version>3.0.0</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.7.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.4.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -113,7 +110,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
-          <version>3.3.2</version>
+          <version>3.4.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -131,16 +128,16 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
+        <version>3.14.0</version>
         <configuration>
-          <release>17</release>
+          <release>21</release>
         </configuration>
       </plugin>
       <!-- Flatten poms for install/deploy (to have the correct revision) -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.5.0</version>
+        <version>1.7.0</version>
         <configuration>
           <!-- found in https://maven.apache.org/maven-ci-friendly.html -->
           <!-- also present in https://www.mojohaus.org/flatten-maven-plugin/apidocs/org/codehaus/mojo/flatten/FlattenMode.html -->
@@ -161,6 +158,36 @@
             <goals>
               <goal>clean</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Ensures at least maven 3.9.0 is used with a correct JDK version -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.9.0,)</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[21.0,)</version>
+                </requireJavaVersion>
+                <banDuplicatePomDependencyVersions/>
+                
+                <!-- Do not activate this, otherwise it won't be possible to compile
+                     only submodules. -->
+                <!--reactorModuleConvergence /-->
+                <!--requireProfileIdsExist/-->
+              </rules>
+            </configuration>
           </execution>
         </executions>
       </plugin>
