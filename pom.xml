@@ -41,6 +41,7 @@
     <junit.version>4.13.2</junit.version>
     <h2database.version>2.3.232</h2database.version>
     <hibernate.version>6.6.11.Final</hibernate.version>
+    <pfl.version>5.0.0</pfl.version>
 
     <!--
       Special property to define which application server to use.
@@ -309,7 +310,7 @@
       <dependency>
         <groupId>org.glassfish.pfl</groupId>
         <artifactId>pfl-basic</artifactId>
-        <version>5.0.0</version>
+        <version>${pfl.version}</version>
       </dependency>
       
       <!-- Embedded application server -->
