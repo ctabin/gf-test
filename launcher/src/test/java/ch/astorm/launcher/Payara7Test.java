@@ -20,9 +20,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
-public class Hibernate62DeploymentTest {
+public class Payara7Test {
     @Test
-    public void testHibernate62Deployment() throws Exception {
+    public void testDeployment() throws Exception {
         File rootDir = new File("test-gf");
         if(rootDir.exists()) { FileUtils.cleanDirectory(rootDir); }
         

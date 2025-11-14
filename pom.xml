@@ -52,7 +52,7 @@
     -->
     <appserver.groupId>fish.payara.extras</appserver.groupId>
     <appserver.artifactId>payara-embedded-all</appserver.artifactId>
-    <appserver.version>7.2024.1.Alpha3</appserver.version>
+    <appserver.version>7.2025.1</appserver.version>
   </properties>
   <build>
     <pluginManagement>

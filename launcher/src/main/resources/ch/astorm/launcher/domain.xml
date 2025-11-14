@@ -98,7 +98,7 @@
       <monitoring-service-configuration enabled="false" />
       <microprofile-metrics-configuration enabled="false" />
       <diagnostic-service enabled="false" />
-      <security-service activate-default-principal-to-role-mapping="true" jacc="simple">
+      <security-service activate-default-principal-to-role-mapping="true">
         <auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="admin-realm">
           <property value="${com.sun.aas.instanceRoot}/config/admin-keyfile" name="file" />
           <property value="fileRealm" name="jaas-context" />
@@ -108,7 +108,7 @@
           <property value="fileRealm" name="jaas-context" />
         </auth-realm>
         <auth-realm classname="com.sun.enterprise.security.auth.realm.certificate.CertificateRealm" name="certificate" />
-        <jacc-provider policy-configuration-factory-provider="com.sun.enterprise.security.jacc.provider.SimplePolicyConfigurationFactory" policy-provider="com.sun.enterprise.security.jacc.provider.SimplePolicyProvider" name="simple" />
+        <jacc-provider policy-provider="org.glassfish.exousia.modules.def.DefaultPolicy" name="default" policy-configuration-factory-provider="org.glassfish.exousia.modules.def.DefaultPolicyConfigurationFactory" />
         <audit-module classname="com.sun.enterprise.security.ee.Audit" name="default">
           <property value="false" name="auditOn" />
         </audit-module>
@@ -186,6 +186,7 @@
         <jvm-options>-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy</jvm-options>
         <jvm-options>-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf</jvm-options>
         <jvm-options>-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/${KEYSTORE}</jvm-options>
+        <jvm-options>-Djakarta.security.jacc.PolicyFactory.provider=org.glassfish.exousia.modules.def.DefaultPolicyFactory</jvm-options>
         <!-- the embedded cacerts.jks contains only two self-signed certificates, hence it is needed to point
              the trusted CA certs to the default one provided by the JDK -->
         <!--jvm-options>-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks</jvm-options-->
