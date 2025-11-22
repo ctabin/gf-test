@@ -78,7 +78,7 @@ public class Payara7Test {
         assertNotNull("WAR-EXT deployment has failed", warextDepName);
         
         try(CloseableHttpClient client = HttpClientBuilder.create().build()) {
-            try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war/"))) {
+            try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?user=admin&password=changeit"))) {
                 assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
 
                 String responseStr;
@@ -88,7 +88,7 @@ public class Payara7Test {
                 }
             }
             
-            try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?query=3"))) {
+            try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?query=3&user=user&password=changeit"))) {
                 assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
 
                 String responseStr;

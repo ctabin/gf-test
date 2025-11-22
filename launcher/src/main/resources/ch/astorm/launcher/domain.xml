@@ -103,6 +103,18 @@
           <property value="${com.sun.aas.instanceRoot}/config/admin-keyfile" name="file" />
           <property value="fileRealm" name="jaas-context" />
         </auth-realm>
+        <auth-realm classname="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm" name="jdbcRealm">
+          <property name="jaas-context" value="jdbcRealm"/>
+          <property name="encoding" value="Base64"/>
+          <property name="password-column" value="PASSWORD"/>
+          <property name="datasource-jndi" value="jdbc/db"/>
+          <property name="group-table" value="sysuser_category"/>
+          <property name="user-table" value="sysuser"/>
+          <property name="group-name-column" value="ROLEID"/>
+          <property name="digestrealm-password-enc-algorithm" value="none"/>
+          <property name="digest-algorithm" value="SHA-256"/>
+          <property name="user-name-column" value="USERPK"/>
+        </auth-realm>
         <auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="file">
           <property value="${com.sun.aas.instanceRoot}/config/keyfile" name="file" />
           <property value="fileRealm" name="jaas-context" />

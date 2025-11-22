@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @WebServlet(urlPatterns = {"/"})
 public class EntryPointServlet extends HttpServlet {
@@ -20,6 +21,19 @@ public class EntryPointServlet extends HttpServlet {
     
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String user = req.getParameter("user");
+        String password = req.getParameter("password");
+        
+        req.login(user, password);
+        
+        StringBuilder builder = new StringBuilder();
+        for(String role : List.of("USER", "ADMIN")) {
+            boolean hasRole = req.isUserInRole(role);
+            if(builder.length()>0) { builder.append("<br/>"); }
+            if(hasRole) { builder.append("User '").append(user).append("' has the role ").append(role); }
+            else { builder.append("User '").append(user).append("' has NOT the role ").append(role); }
+        }
+        
         String result;
         String queryStr = req.getParameter("query");
         if(queryStr!=null) {
@@ -28,12 +42,14 @@ public class EntryPointServlet extends HttpServlet {
             result = ""+bean.create()+" leafs created";
         }
         
-        String page = "<html><head></head><body>"+result+"</body></html>";
+        String page = "<html><head></head><body><p>"+builder+"</p><p>"+result+"</p></body></html>";
         
         byte[] responseBytes = page.getBytes(StandardCharsets.UTF_8);
         resp.setContentLength(responseBytes.length);
         try(OutputStream os = resp.getOutputStream()) {
             os.write(responseBytes);
         }
+        
+        req.logout();
     }
 }
