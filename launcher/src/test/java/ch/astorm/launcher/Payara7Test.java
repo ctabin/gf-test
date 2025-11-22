@@ -77,34 +77,36 @@ public class Payara7Test {
         String warextDepName = deployer.deploy(warext);
         assertNotNull("WAR-EXT deployment has failed", warextDepName);
         
-        try(CloseableHttpClient client = HttpClientBuilder.create().build()) {
-            try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?user=admin&password=changeit"))) {
-                assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
+        for(int i=0 ; i<1000 ; ++i) {
+            try(CloseableHttpClient client = HttpClientBuilder.create().build()) {
+                try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?user=admin&password=changeit"))) {
+                    assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
 
-                String responseStr;
-                try(InputStream is = response.getEntity().getContent()) {
-                    responseStr = IOUtils.toString(is, StandardCharset.UTF_8);
-                    System.out.println("### [CREATE] Response: "+responseStr);
+                    String responseStr;
+                    try(InputStream is = response.getEntity().getContent()) {
+                        responseStr = IOUtils.toString(is, StandardCharset.UTF_8);
+                        System.out.println("### [CREATE] Response: "+responseStr);
+                    }
                 }
-            }
-            
-            try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?query=3&user=user&password=changeit"))) {
-                assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
 
-                String responseStr;
-                try(InputStream is = response.getEntity().getContent()) {
-                    responseStr = IOUtils.toString(is, StandardCharset.UTF_8);
-                    System.out.println("### [QUERY][WAR] Response: "+responseStr);
+                try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?query=3&user=user&password=changeit"))) {
+                    assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
+
+                    String responseStr;
+                    try(InputStream is = response.getEntity().getContent()) {
+                        responseStr = IOUtils.toString(is, StandardCharset.UTF_8);
+                        System.out.println("### [QUERY][WAR] Response: "+responseStr);
+                    }
                 }
-            }
-            
-            try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/war-ext?query=4"))) {
-                assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
 
-                String responseStr;
-                try(InputStream is = response.getEntity().getContent()) {
-                    responseStr = IOUtils.toString(is, StandardCharset.UTF_8);
-                    System.out.println("### [QUERY][WAR-EXT] Response: "+responseStr);
+                try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/war-ext?query=4"))) {
+                    assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
+
+                    String responseStr;
+                    try(InputStream is = response.getEntity().getContent()) {
+                        responseStr = IOUtils.toString(is, StandardCharset.UTF_8);
+                        System.out.println("### [QUERY][WAR-EXT] Response: "+responseStr);
+                    }
                 }
             }
         }

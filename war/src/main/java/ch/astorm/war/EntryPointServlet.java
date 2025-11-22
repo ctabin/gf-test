@@ -34,15 +34,17 @@ public class EntryPointServlet extends HttpServlet {
             else { builder.append("User '").append(user).append("' has NOT the role ").append(role); }
         }
         
-        String result;
-        String queryStr = req.getParameter("query");
-        if(queryStr!=null) {
-            result = bean.getLeaf(Long.parseLong(queryStr));
-        } else {
-            result = ""+bean.create()+" leafs created";
+        req.logout();
+        req.login(user, password);
+        
+        for(String role : List.of("USER", "ADMIN")) {
+            boolean hasRole = req.isUserInRole(role);
+            if(builder.length()>0) { builder.append("<br/>"); }
+            if(hasRole) { builder.append("User '").append(user).append("' has the role ").append(role); }
+            else { builder.append("User '").append(user).append("' has NOT the role ").append(role); }
         }
         
-        String page = "<html><head></head><body><p>"+builder+"</p><p>"+result+"</p></body></html>";
+        String page = "<html><head></head><body><p>"+builder+"</p></body></html>";
         
         byte[] responseBytes = page.getBytes(StandardCharsets.UTF_8);
         resp.setContentLength(responseBytes.length);

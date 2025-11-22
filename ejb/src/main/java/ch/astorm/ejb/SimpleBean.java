@@ -2,11 +2,9 @@
 package ch.astorm.ejb;
 
 import ch.astorm.api.SimpleBeanRemote;
-import ch.astorm.ejb.entities.Leaf;
 import ch.astorm.ejb.entities.User;
 import ch.astorm.ejb.entities.UserCategory;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Remote;
 import jakarta.ejb.Singleton;
@@ -70,19 +68,7 @@ public class SimpleBean {
         System.out.println("### [INIT] EJB initialized");
     }
     
-    public int create() {
-        for(int i=0 ; i<10 ; ++i) {
-            Leaf leaf = new Leaf();
-            leaf.setId((long)i);
-            leaf.setName("Leaf "+(i+1));
-            em.persist(leaf);
-        }
-        return 10;
-    }
-    
     public String getLeaf(long id) {
-        return em.createQuery("SELECT l.name FROM Leaf l WHERE l.id=?1", String.class).
-            setParameter(1, id).
-            getSingleResult();
+        return "empty";
     }
 }
