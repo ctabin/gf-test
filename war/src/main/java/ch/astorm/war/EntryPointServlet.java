@@ -1,5 +1,5 @@
-package ch.astorm.war;
 
+package ch.astorm.war;
 
 import ch.astorm.ejb.SimpleBean;
 import jakarta.ejb.EJB;

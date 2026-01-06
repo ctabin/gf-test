@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<domain log-root="${EDMS_ROOT}/payara-logs" application-root="${com.sun.aas.instanceRoot}/applications" version="10.0">
-  <hazelcast-runtime-configuration start-port="5900" das-port="4900" auto-increment-port="true"></hazelcast-runtime-configuration>
+<domain log-root="${EDMS_ROOT}/glassfish-logs" application-root="${com.sun.aas.instanceRoot}/applications" version="10.0">
   <security-configurations>
     <authentication-service default="true" name="adminAuth" use-password-credential="true">
       <security-provider name="spcrealm" type="LoginModule" provider-name="adminSpc">
         <login-module-config name="adminSpecialLM" control-flag="sufficient" module-class="com.sun.enterprise.admin.util.AdminLoginModule">
-          <property name="config" value="server-config"></property>
-          <property name="auth-realm" value="admin-realm"></property>
+          <property name="config" value="server-config" />
+          <property name="auth-realm" value="admin-realm" />
         </login-module-config>
       </security-provider>
       <security-provider name="filerealm" type="LoginModule" provider-name="adminFile">
         <login-module-config name="adminFileLM" control-flag="sufficient" module-class="com.sun.enterprise.security.auth.login.FileLoginModule">
-          <property name="config" value="server-config"></property>
-          <property name="auth-realm" value="admin-realm"></property>
+          <property name="config" value="server-config" />
+          <property name="auth-realm" value="admin-realm" />
         </login-module-config>
       </security-provider>
     </authentication-service>
     <authorization-service default="true" name="authorizationService">
       <security-provider name="simpleAuthorization" type="Simple" provider-name="simpleAuthorizationProvider">
-        <authorization-provider-config support-policy-deploy="false" name="simpleAuthorizationProviderConfig"></authorization-provider-config>
+        <authorization-provider-config support-policy-deploy="false" name="simpleAuthorizationProviderConfig" />
       </security-provider>
     </authorization-service>
   </security-configurations>
@@ -56,8 +55,7 @@
   <configs>
     <config name="server-config">
       <system-property name="JMS_PROVIDER_PORT" value="9956" description="Port Number that JMS Service will listen for remote clients connection." />
-      
-      <phone-home-runtime-configuration enabled="false"/>
+      <phone-home-runtime-configuration enabled="false" />
       <payara-executor-service-configuration />
       <http-service>
         <access-log />
@@ -103,25 +101,28 @@
           <property value="${com.sun.aas.instanceRoot}/config/admin-keyfile" name="file" />
           <property value="fileRealm" name="jaas-context" />
         </auth-realm>
-        <auth-realm classname="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm" name="jdbcRealm">
-          <property name="jaas-context" value="jdbcRealm"/>
-          <property name="encoding" value="Base64"/>
-          <property name="password-column" value="PASSWORD"/>
-          <property name="datasource-jndi" value="jdbc/db"/>
-          <property name="group-table" value="sysuser_category"/>
-          <property name="user-table" value="sysuser"/>
-          <property name="group-name-column" value="ROLEID"/>
-          <property name="digestrealm-password-enc-algorithm" value="none"/>
-          <property name="digest-algorithm" value="SHA-256"/>
-          <property name="user-name-column" value="USERPK"/>
+        <auth-realm classname="com.sun.enterprise.security.ee.authentication.glassfish.jdbc.JDBCRealm" name="jdbcRealm">
+          <property name="jaas-context" value="jdbcRealm" />
+          <property name="encoding" value="Base64" />
+          <property name="password-column" value="PASSWORD" />
+          <property name="datasource-jndi" value="jdbc/db" />
+          <property name="group-table" value="sysuser_category" />
+          <property name="user-table" value="sysuser" />
+          <property name="group-name-column" value="ROLEID" />
+          <property name="digestrealm-password-enc-algorithm" value="none" />
+          <property name="digest-algorithm" value="SHA-256" />
+          <property name="user-name-column" value="USERPK" />
         </auth-realm>
         <auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="file">
           <property value="${com.sun.aas.instanceRoot}/config/keyfile" name="file" />
           <property value="fileRealm" name="jaas-context" />
         </auth-realm>
         <auth-realm classname="com.sun.enterprise.security.auth.realm.certificate.CertificateRealm" name="certificate" />
-        <jacc-provider policy-provider="org.glassfish.exousia.modules.def.DefaultPolicy" name="default" policy-configuration-factory-provider="org.glassfish.exousia.modules.def.DefaultPolicyConfigurationFactory" />
-        <audit-module classname="com.sun.enterprise.security.ee.Audit" name="default">
+        <jacc-provider policy-configuration-factory-provider="org.glassfish.exousia.modules.locked.SimplePolicyConfigurationFactory" policy-provider="org.glassfish.exousia.modules.locked.SimplePolicyProvider" name="default">
+          <property value="${com.sun.aas.instanceRoot}/generated/policy" name="repository" />
+        </jacc-provider>
+        <jacc-provider policy-configuration-factory-provider="org.glassfish.exousia.modules.locked.SimplePolicyConfigurationFactory" policy-provider="org.glassfish.exousia.modules.locked.SimplePolicyProvider" name="simple" />
+        <audit-module classname="com.sun.enterprise.security.ee.audit.Audit" name="default">
           <property value="false" name="auditOn" />
         </audit-module>
         <message-security-config auth-layer="SOAP">
@@ -159,13 +160,13 @@
           </provider-config>
         </message-security-config>
         <!--message-security-config auth-layer="HttpServlet">
-          <provider-config provider-type="server" provider-id="GFConsoleAuthModule" class-name="org.glassfish.admingui.common.security.AdminConsoleAuthModule">
-            <request-policy auth-source="sender" />
-            <response-policy />
-            <property name="loginPage" value="/login.jsf" />
-            <property name="loginErrorPage" value="/loginError.jsf" />
-          </provider-config>
-        </message-security-config-->
+             <provider-config provider-type="server" provider-id="GFConsoleAuthModule" class-name="org.glassfish.admingui.common.security.AdminConsoleAuthModule">
+             <request-policy auth-source="sender" />
+             <response-policy />
+             <property name="loginPage" value="/login.jsf" />
+             <property name="loginErrorPage" value="/loginError.jsf" />
+             </provider-config>
+             </message-security-config-->
         <property value="SHA-256" name="default-digest-algorithm" />
       </security-service>
       <java-config classpath-suffix="" system-classpath="" debug-options="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9009">
@@ -241,10 +242,10 @@
           </protocol>
           <!-- #################### -->
           <!--protocol name="admin-listener">
-            <http default-virtual-server="__asadmin" max-connections="250" encoded-slash-enabled="true" xpowered-by="false">
-              <file-cache enabled="false" />
-            </http>
-          </protocol-->
+               <http default-virtual-server="__asadmin" max-connections="250" encoded-slash-enabled="true" xpowered-by="false">
+               <file-cache enabled="false" />
+               </http>
+               </protocol-->
           <!-- #################### -->
         </protocols>
         <network-listeners>

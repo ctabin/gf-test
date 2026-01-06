@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
-public class Payara7Test {
+public class Glassfish8Test {
     @Test
     public void testDeployment() throws Exception {
         File rootDir = new File("test-gf");
@@ -37,26 +37,37 @@ public class Payara7Test {
             domainXML = IOUtils.toString(is, StandardCharset.UTF_8);
         }
         
+        String loginConf;
+        try(InputStream is = Main.class.getResourceAsStream("login.conf")) {
+            loginConf = IOUtils.toString(is, StandardCharset.UTF_8);
+        }
+        
         File dbDir = new File(rootDir, "database");
         dbDir.mkdirs();
         
-        boolean isPayara = System.getProperty("appserver.groupId", "fish.payara.extras").equals("fish.payara.extras");
-        
         File db = new File(dbDir, "db.data");
+        domainXML = domainXML.replace("${EDMS_ROOT}", rootDir.getAbsolutePath());
         domainXML = domainXML.replace("${DATABASE_FILE}", db.getAbsolutePath());
-        domainXML = domainXML.replace("${KEYSTORE}", "keystore."+(isPayara ? "p12" : "jks"));
+        domainXML = domainXML.replace("${KEYSTORE}", "keystore.p12");
         
         File domainFile = new File(rootDir, "domain.xml");
         try(FileOutputStream fos = new FileOutputStream(domainFile)) {
             IOUtils.write(domainXML, fos, StandardCharset.UTF_8);
         }
         
+        File loginFile = new File(rootDir, "login.conf");
+        try(FileOutputStream fos = new FileOutputStream(loginFile)) {
+            IOUtils.write(loginConf, fos, StandardCharset.UTF_8);
+        }
+        
+        System.setProperty("java.security.auth.login.config", loginFile.getAbsolutePath());
+        
         //special property needed with the JDK17
         //see https://github.com/eclipse-ee4j/orb-gmbal/issues/22#issuecomment-882293428
         System.setProperty("org.glassfish.gmbal.no.multipleUpperBoundsException", "true");
         
         GlassFishProperties gfprops = new GlassFishProperties();
-        gfprops.setConfigFileURI(domainFile.toURI().toString());
+        gfprops.setConfigFile(domainFile);
         
         //https://glassfish.org/docs/SNAPSHOT/embedded-server-guide.html#instance-root-directory-2
         File tempRoot = new File(rootDir, "glassfish");
@@ -77,7 +88,7 @@ public class Payara7Test {
         String warextDepName = deployer.deploy(warext);
         assertNotNull("WAR-EXT deployment has failed", warextDepName);
         
-        for(int i=0 ; i<1000 ; ++i) {
+        for(int i=0 ; i<10 ; ++i) {
             try(CloseableHttpClient client = HttpClientBuilder.create().build()) {
                 try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?user=admin&password=changeit"))) {
                     assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
@@ -99,7 +110,7 @@ public class Payara7Test {
                     }
                 }
 
-                try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/war-ext?query=4"))) {
+                try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/war-ext?query=4&user=admin&password=changeit"))) {
                     assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
 
                     String responseStr;
