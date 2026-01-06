@@ -101,6 +101,11 @@
           <property value="${com.sun.aas.instanceRoot}/config/admin-keyfile" name="file" />
           <property value="fileRealm" name="jaas-context" />
         </auth-realm>
+        <auth-realm classname="ch.astorm.launcher.auth.CustomRealm" name="customRealm">
+          <property name="jaas-context" value="customRealm" />
+          <property name="realm-name" value="jdbcRealm" />
+          <property name="datasource-jndi" value="jdbc/db" />
+        </auth-realm>
         <auth-realm classname="com.sun.enterprise.security.ee.authentication.glassfish.jdbc.JDBCRealm" name="jdbcRealm">
           <property name="jaas-context" value="jdbcRealm" />
           <property name="encoding" value="Base64" />

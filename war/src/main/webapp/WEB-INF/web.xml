@@ -5,7 +5,7 @@
    version="5.0">
     <login-config>
         <auth-method>BASIC</auth-method>
-        <realm-name>jdbcRealm</realm-name>
+        <realm-name>customRealm</realm-name>
     </login-config>
     <security-role>
         <role-name>ADMIN</role-name>

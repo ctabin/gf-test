@@ -34,6 +34,12 @@ public class EntryPointServlet extends HttpServlet {
             else { builder.append("User '").append(user).append("' has NOT the role ").append(role); }
         }
         
+        String query = req.getParameter("query");
+        if(query!=null) {
+            builder.append("<br/>").append(bean.getLeaf(0));
+            builder.append("<br/>").append(bean.getLeaf(0));
+        }
+        
         req.logout();
         req.login(user, password);
         
@@ -42,6 +48,11 @@ public class EntryPointServlet extends HttpServlet {
             if(builder.length()>0) { builder.append("<br/>"); }
             if(hasRole) { builder.append("User '").append(user).append("' has the role ").append(role); }
             else { builder.append("User '").append(user).append("' has NOT the role ").append(role); }
+        }
+        
+        if(query!=null) {
+            builder.append("<br/>").append(bean.getLeaf(0));
+            builder.append("<br/>").append(bean.getLeaf(0));
         }
         
         String page = "<html><head></head><body><p>"+builder+"</p></body></html>";
