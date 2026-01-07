@@ -2,7 +2,6 @@
 package ch.astorm.warext;
 
 import ch.astorm.api.SimpleBeanRemote;
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,17 +11,27 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import javax.naming.InitialContext;
 
 @WebServlet(urlPatterns = {"/"})
 public class EntryPointServlet extends HttpServlet {
 
-    @EJB
-    private SimpleBeanRemote remoteBean;
+    //@EJB
+    private static SimpleBeanRemote remoteBean;
     
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String user = req.getParameter("user");
         String password = req.getParameter("password");
+        
+        if(remoteBean==null) {
+            try {
+                InitialContext ic = new InitialContext();
+                remoteBean = (SimpleBeanRemote)ic.lookup(SimpleBeanRemote.class.getName());
+            } catch(Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         
         req.login(user, password);
         
