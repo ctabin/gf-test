@@ -2,17 +2,15 @@
 package ch.astorm.launcher.auth;
 
 import com.sun.enterprise.security.BasePasswordLoginModule;
-import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm;
-import jakarta.security.jacc.PolicyContext;
+import com.sun.enterprise.security.auth.realm.exceptions.NoSuchRealmException;
+import com.sun.enterprise.security.ee.authentication.glassfish.jdbc.JDBCRealm;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
 
 public class CustomLoginModule extends BasePasswordLoginModule {
     private static final Logger LOG = Logger.getLogger(CustomLoginModule.class.getName());
-    private static final ThreadLocal<String> THREADLOCAL_CONTEXTID = new ThreadLocal<>();
     
     @Override
     protected void authenticateUser() throws LoginException {
@@ -24,18 +22,6 @@ public class CustomLoginModule extends BasePasswordLoginModule {
         //of a user without password: https://stackoverflow.com/questions/27873362/ldap-bind-seems-to-return-true-with-blank-password
         if(password.length<=0) { throw new LoginException("No password provided"); }
 
-        //HACK
-        //the context id is set to null when the logout is called and not set back when
-        //a further login is done
-        String policyContextId = PolicyContext.getContextID();
-        if(policyContextId==null) {
-            String contextId = THREADLOCAL_CONTEXTID.get();
-            if(contextId!=null) { PolicyContext.setContextID(contextId); }
-        } else {
-            THREADLOCAL_CONTEXTID.set(policyContextId);
-        }
-
-        
         CustomRealm realm;
         try {
             realm = (CustomRealm)Realm.getInstance("customRealm");
