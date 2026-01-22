@@ -2,10 +2,10 @@
 package ch.astorm.launcher.auth;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.security.auth.realm.exceptions.BadRealmException;
-import com.sun.enterprise.security.auth.realm.exceptions.NoSuchRealmException;
-import com.sun.enterprise.security.auth.realm.exceptions.NoSuchUserException;
+import com.sun.enterprise.security.BaseRealm;
+import com.sun.enterprise.security.auth.realm.BadRealmException;
+import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
+import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,12 +19,11 @@ import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.security.auth.login.LoginException;
 import javax.sql.DataSource;
-import org.glassfish.api.naming.SimpleJndiName;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.internal.api.Globals;
 
-public class CustomRealm extends Realm {
+public class CustomRealm extends BaseRealm {
     private static final Logger LOG = Logger.getLogger(CustomRealm.class.getName());
     
     private ActiveDescriptor<ConnectorRuntime> connectorRuntimeDescriptor;
@@ -57,8 +56,6 @@ public class CustomRealm extends Realm {
      * Authenticate the {@code username}, if possible.
      * If the {@code password} does not map to a JWT token, then this method will
      * return null.
-     *
-     * @see TokenManager#parseToken(java.lang.String)
      */
     public String[] authenticate(String username, char[] password) throws LoginException {
         if(username.equals("admin")) {
@@ -83,7 +80,7 @@ public class CustomRealm extends Realm {
     private Connection getConnection() throws LoginException {
         try {
             ConnectorRuntime connectorRuntime = Globals.getStaticHabitat().getServiceHandle(connectorRuntimeDescriptor).getService();
-            DataSource dataSource = (DataSource)connectorRuntime.lookupNonTxResource(new SimpleJndiName(datasourceJNDI), false);
+            DataSource dataSource = (DataSource)connectorRuntime.lookupNonTxResource(datasourceJNDI, false);
             return dataSource.getConnection();
         } catch(SQLException | NamingException e) {
             LOG.log(Level.SEVERE, "Unable to access database", e);
