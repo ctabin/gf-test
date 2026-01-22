@@ -8,8 +8,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.naming.InitialContext;
 
@@ -33,7 +31,15 @@ public class EntryPointServlet extends HttpServlet {
             }
         }
         
+        req.logout();
         req.login(user, password);
+        if(!List.of("USER", "ADMIN").stream().anyMatch(s -> req.isUserInRole(s))) { throw new RuntimeException("No role"); }
+        req.logout();
+        req.login(user, password);
+        if(!List.of("USER", "ADMIN").stream().anyMatch(s -> req.isUserInRole(s))) { throw new RuntimeException("No role"); }
+        req.logout();
+        req.login(user, password);
+        if(!List.of("USER", "ADMIN").stream().anyMatch(s -> req.isUserInRole(s))) { throw new RuntimeException("No role"); }
         
         StringBuilder builder = new StringBuilder();
         for(String role : List.of("USER", "ADMIN")) {
@@ -47,29 +53,6 @@ public class EntryPointServlet extends HttpServlet {
         if(query!=null) {
             builder.append("<br/>").append(remoteBean.getLeaf(0));
             builder.append("<br/>").append(remoteBean.getLeaf(0));
-        }
-        
-        req.logout();
-        req.login(user, password);
-        
-        for(String role : List.of("USER", "ADMIN")) {
-            boolean hasRole = req.isUserInRole(role);
-            if(builder.length()>0) { builder.append("<br/>"); }
-            if(hasRole) { builder.append("User '").append(user).append("' has the role ").append(role); }
-            else { builder.append("User '").append(user).append("' has NOT the role ").append(role); }
-        }
-        
-        if(query!=null) {
-            builder.append("<br/>").append(remoteBean.getLeaf(0));
-            builder.append("<br/>").append(remoteBean.getLeaf(0));
-        }
-        
-        String page = "<html><head></head><body><p>"+builder+"</p></body></html>";
-        
-        byte[] responseBytes = page.getBytes(StandardCharsets.UTF_8);
-        resp.setContentLength(responseBytes.length);
-        try(OutputStream os = resp.getOutputStream()) {
-            os.write(responseBytes);
         }
         
         req.logout();

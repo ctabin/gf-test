@@ -18,7 +18,7 @@
       This value will be overridden in the JDK active profile. Hence, this value
       is only here to represent the default JDK that should be used for compilation.
     -->
-    <javase.version>17</javase.version>
+    <javase.version>21</javase.version>
     
     <!--
       Java EE version
@@ -45,14 +45,12 @@
     <!--
       Special property to define which application server to use.
     -->
-    <appserver.groupId>org.glassfish.main.extras</appserver.groupId>
+    <!--appserver.groupId>org.glassfish.main.extras</appserver.groupId>
     <appserver.artifactId>glassfish-embedded-all</appserver.artifactId>
-    <appserver.version>8.0.0-M15</appserver.version>
-    <!--
+    <appserver.version>8.0.0-M15</appserver.version-->
     <appserver.groupId>fish.payara.extras</appserver.groupId>
     <appserver.artifactId>payara-embedded-all</appserver.artifactId>
-    <appserver.version>7.2025.1</appserver.version>
-    -->
+    <appserver.version>7.2026.1</appserver.version>
   </properties>
   <build>
     <pluginManagement>

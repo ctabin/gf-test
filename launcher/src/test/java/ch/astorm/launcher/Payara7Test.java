@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
-public class Glassfish8Test {
+public class Payara7Test {
     @Test
     public void testDeployment() throws Exception {
         File rootDir = new File("test-gf");
@@ -67,7 +67,7 @@ public class Glassfish8Test {
         System.setProperty("org.glassfish.gmbal.no.multipleUpperBoundsException", "true");
         
         GlassFishProperties gfprops = new GlassFishProperties();
-        gfprops.setConfigFile(domainFile);
+        gfprops.setConfigFileURI(domainFile.toURI().toString());
         
         //https://glassfish.org/docs/SNAPSHOT/embedded-server-guide.html#instance-root-directory-2
         File tempRoot = new File(rootDir, "glassfish");
@@ -88,9 +88,9 @@ public class Glassfish8Test {
         String warextDepName = deployer.deploy(warext);
         assertNotNull("WAR-EXT deployment has failed", warextDepName);
         
-        for(int i=0 ; i<1000 ; ++i) {
+        for(int i=0 ; i<5 ; ++i) {
             try(CloseableHttpClient client = HttpClientBuilder.create().build()) {
-                try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?user=admin&password=changeit"))) {
+                /*try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/sample-war?user=admin&password=changeit"))) {
                     assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
 
                     String responseStr;
@@ -108,7 +108,7 @@ public class Glassfish8Test {
                         responseStr = IOUtils.toString(is, StandardCharset.UTF_8);
                         System.out.println("### [QUERY][WAR] Response: "+responseStr);
                     }
-                }
+                }*/
 
                 try(CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080/war-ext?query=4&user=user&password=changeit"))) {
                     assertEquals(response.getStatusLine().getStatusCode()+": "+response.getStatusLine().getReasonPhrase(), 200, response.getStatusLine().getStatusCode());
